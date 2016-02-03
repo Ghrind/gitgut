@@ -62,7 +62,6 @@ module Gitgut
       true
     end
 
-    # TODO: merge with #should_be_merged_in_staging?
     def develop_is_ahead_of_staging?
       to_develop > 0 && to_develop < to_staging
     end
@@ -82,7 +81,8 @@ module Gitgut
 
     def action_suggestion
       return 'Review the PR' if ticket && ticket.assigned_to_me? && ticket.in_review?
-      return 'Merge in staging' if develop_is_ahead_of_staging? || should_be_merged_in_staging?
+      return 'Merge into staging' if should_be_merged_in_staging?
+      return 'Merge into staging or update your staging branch' if develop_is_ahead_of_staging?
       if ticket
         return 'Do some code' if ticket.assigned_to_me?
         return 'Assign the ticket to me (and start the development)' if ticket.assignee.nil?
