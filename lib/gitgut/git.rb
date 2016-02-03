@@ -1,4 +1,6 @@
 module Gitgut
+  # Wrapper around git commands
+  #
   # Show commits only on this branch
   # git log --no-merges HEAD --not develop --pretty=oneline
   module Git

@@ -1,4 +1,5 @@
 module Gitgut
+  # A local git branch
   class Branch
     def initialize(name)
       @raw_name = name
@@ -31,10 +32,8 @@ module Gitgut
     end
 
     def jira_ticket_number
-      matches = name.match /^jt-(?<id>\d+)/i
-      if matches
-        return 'JT-' + matches[:id]
-      end
+      matches = name.match(/^jt-(?<id>\d+)/i)
+      return 'JT-' + matches[:id] if matches
     end
 
     def ticket
@@ -68,8 +67,7 @@ module Gitgut
 
     def should_be_merged_in_staging?
       return false unless ticket
-      if ['In Functional Review', 'In Review', 'Ready for Release'].include?(ticket.status) &&
-        to_staging > 0
+      if ['In Functional Review', 'In Review', 'Ready for Release'].include?(ticket.status) && to_staging > 0
         return true
       end
       false

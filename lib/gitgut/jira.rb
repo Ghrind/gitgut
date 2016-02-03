@@ -1,7 +1,9 @@
 require 'httparty'
 
 module Gitgut
+  # Namespace around Atlassian/JIRA objects
   module Jira
+    # A JIRA ticket
     class Ticket
       attr_reader :id, :assignee, :status
 
@@ -56,13 +58,13 @@ module Gitgut
       JSON.parse(response.body)
     end
 
+    # Wrapper around a JQL query for JIR
     class Request
-
       DEFAULT_OPTIONS = {
         headers: { 'Content-Type' => 'application/json' }
-      }
+      }.freeze
 
-      JQL_PARAM_NAME = 'jql'
+      JQL_PARAM_NAME = 'jql'.freeze
 
       def initialize(query)
         @query = query
@@ -89,7 +91,6 @@ module Gitgut
           password: Settings.jira.password
         }
       end
-
     end
   end
 end

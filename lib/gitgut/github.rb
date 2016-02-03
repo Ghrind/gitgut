@@ -1,11 +1,13 @@
 require 'octokit'
 
 module Gitgut
+  # A wrapper around an octokit client
   module Github
     def self.client
       @client ||= Octokit::Client.new(login: Settings.github.login, password: Settings.github.password)
     end
 
+    # A Github pull request
     class PullRequest
       attr_reader :number, :state, :merged_at
 
