@@ -2,6 +2,12 @@
 
 Display PR and JIRA tickets info about the branches that are currently checked out on your git repository.
 
+## Disclaimer
+
+This gem is tailored for the JobTeaser.com development workflow and is probably not suited for anything else at this time.
+
+Use only for inspiration purpose.
+
 ## Expected features
 
 * Show how many commits are not merged in staging/develop
