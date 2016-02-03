@@ -2,6 +2,16 @@
 
 Display PR and JIRA tickets info about the branches that are currently checked out on your git repository.
 
+## Expected features
+
+* Show how many commits are not merged in staging/develop
+* Show all commits for the branch only
+* Allow to checkout a branch from the jira number
+* Show if branch has one or more PR and the state of the PR
+* Categorize branches by JIRA/NO JIRA, developer/reviewer, JIRA status
+* Automatically delete branches that are merged in develop
+* Display time retrieving various info
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -19,6 +29,23 @@ Or install it yourself as:
     $ gem install gitgut
 
 ## Usage
+
+Add a .gitgut file to the working directory of your application
+
+    # .gitgut
+    jira:
+      username: first_name.last_name
+      password: 'p@$$W0rd'
+      endpoint: https://[companyname].atlassian.net/rest/api/2/search
+
+    github:
+      login: username
+      password: 'p@$$W0rd'
+      repo:
+        name: name_of_the_repository
+        owner: repo_owner_username
+
+And then run gitgut from the same directory
 
     $ gitgut
 

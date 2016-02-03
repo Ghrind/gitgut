@@ -1,7 +1,62 @@
 #!/usr/bin/env ruby
 
+t1 = Time.now
+
 lib = File.expand_path(File.dirname(__FILE__) + '/../lib')
 $LOAD_PATH.unshift(lib) if File.directory?(lib) && !$LOAD_PATH.include?(lib)
 
 require 'gitgut'
-puts Gitgut::VERSION
+
+require 'colorize'
+
+headings = ['Branch name', 'Develop', 'Staging', 'PR', 'JIRA', 'Suggestion']
+
+def present_commit_count(count, error = false)
+  return count.to_s.colorize(:red) if error
+  return '-' if count.zero?
+  count.to_s
+end
+
+print 'Retrieving info: '
+data = []
+
+branches = []
+`git branch`.each_line do |l|
+  branch = Gitgut::Branch.new(l)
+
+  next if %w(develop master staging).include? branch.name
+
+  branches << branch
+end
+
+require 'parallel'
+branches = Parallel.map(branches) do |branch|
+  branch.preload!.tap do
+    print '.'.colorize(:green)
+  end
+end
+
+branches.each do |branch|
+  row = [
+    branch.name.colorize(branch.color),
+    present_commit_count(branch.to_develop),
+    present_commit_count(branch.to_staging, branch.develop_is_ahead_of_staging? || branch.should_be_merged_in_staging?),
+    branch.pull_requests.map { |pr| pr.number.colorize(pr.color) }.join(' '),
+    (branch.ticket ? branch.ticket.id.colorize(branch.ticket.color) : ''),
+    #(branch.ticket ? branch.ticket.assignee_initials : ''),
+    #(branch.ticket ? branch.ticket.status : '')
+    branch.action_suggestion
+  ]
+
+  data << row
+end
+puts
+puts
+
+require 'terminal-table'
+table = Terminal::Table.new headings: headings, rows: data
+
+puts table
+
+puts
+puts "Rendered in #{(Time.now - t1).round(1)}s"
