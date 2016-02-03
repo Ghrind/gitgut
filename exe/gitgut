@@ -42,7 +42,7 @@ branches.each do |branch|
     present_commit_count(branch.to_develop),
     present_commit_count(branch.to_staging, branch.develop_is_ahead_of_staging? || branch.should_be_merged_in_staging?),
     branch.pull_requests.map { |pr| pr.number.colorize(pr.color) }.join(' '),
-    (branch.ticket ? branch.ticket.id.colorize(branch.ticket.color) : ''),
+    (branch.ticket ? branch.ticket.key.colorize(branch.ticket.color) : ''),
     #(branch.ticket ? branch.ticket.assignee_initials : ''),
     #(branch.ticket ? branch.ticket.status : '')
     branch.action_suggestion

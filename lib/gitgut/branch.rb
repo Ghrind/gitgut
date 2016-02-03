@@ -83,9 +83,9 @@ module Gitgut
       return 'Merge into staging or update your staging branch' if develop_is_ahead_of_staging?
       if ticket
         return 'Do some code' if ticket.assigned_to_me?
-        return 'Assign the ticket to me (and start the development)' if ticket.assignee.nil?
+        return 'Assign the ticket to me (and start the development)' if ticket.assignee.nil? && !ticket.done?
       end
-      return 'Delete the local branch' if merged_everywhere? && (!ticket || ticket.ready_for_release?)
+      return 'Delete the local branch' if (merged_everywhere? && (!ticket || ticket.done?)) || (ticket && ticket.closed?)
     end
 
     def preload!

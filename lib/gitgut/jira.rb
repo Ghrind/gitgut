@@ -5,10 +5,10 @@ module Gitgut
   module Jira
     # A JIRA ticket
     class Ticket
-      attr_reader :id, :assignee, :status
+      attr_reader :key, :assignee, :status
 
       def initialize(payload)
-        @id = payload['id']
+        @key = payload['key']
         # TODO: use Mash?
         if payload['fields']['assignee']
           @assignee = payload['fields']['assignee']['name']
@@ -38,6 +38,18 @@ module Gitgut
         status == 'In Review'
       end
 
+      def done?
+        ready_for_release? || released? || closed?
+      end
+
+      def closed?
+        status == 'Closed'
+      end
+
+      def released?
+        status == 'Released'
+      end
+
       def color
         return :light_blue if assigned_to_me?
         case status
@@ -45,8 +57,10 @@ module Gitgut
           :white
         when 'In Development', 'Open'
           :light_blue
-        when 'Ready for Release'
+        when 'Ready for Release', 'Released'
           :green
+        when 'Closed'
+          :light_black
         else
           :white
         end
