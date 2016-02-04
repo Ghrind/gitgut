@@ -5,6 +5,7 @@ module Gitgut
       @raw_name = name
     end
 
+    # TODO: Sanitization should be done elsewhere
     def name
       return @name if @name
       match_data = /[ *]+(?<branch>[^\s]*)/.match @raw_name
@@ -48,16 +49,25 @@ module Gitgut
     end
 
     def color
-      if valid?
-        (!pull_requests.empty? && pull_requests.all?(&:merged?)) ? :green : :white
+      return :red unless valid?
+      if has_pull_requests? && all_pull_requests_merged?
+        :green
       else
-        :red
+        :white
       end
+    end
+
+    def all_pull_requests_merged?
+      pull_requests.all?(&:merged?)
+    end
+
+    def has_pull_requests?
+      !pull_requests.empty?
     end
 
     def valid?
       return false if develop_is_ahead_of_staging?
-      return false if should_be_merged_in_staging?
+      return false if merge_in_staging_required_by_ticket_status?
       true
     end
 
@@ -65,7 +75,7 @@ module Gitgut
       to_develop > 0 && to_develop < to_staging
     end
 
-    def should_be_merged_in_staging?
+    def merge_in_staging_required_by_ticket_status?
       return false unless ticket
       if ['In Functional Review', 'In Review', 'Ready for Release'].include?(ticket.status) && to_staging > 0
         return true
@@ -79,7 +89,7 @@ module Gitgut
 
     def action_suggestion
       return 'Review the PR' if ticket && ticket.assigned_to_me? && ticket.in_review?
-      return 'Merge into staging' if should_be_merged_in_staging?
+      return 'Merge into staging' if merge_in_staging_required_by_ticket_status?
       return 'Merge into staging or update your staging branch' if develop_is_ahead_of_staging?
       if ticket
         return 'Do some code' if ticket.assigned_to_me?
