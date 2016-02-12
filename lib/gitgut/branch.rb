@@ -41,6 +41,11 @@ module Gitgut
       return @ticket if defined?(@ticket)
       if jira_ticket_number
         payload = Gitgut::Jira.request 'id=' + jira_ticket_number
+        if payload['errorMessages']
+          puts "\nError while getting JIRA ticket ##{jira_ticket_number}: #{payload['errorMessages'].join('; ')}"
+          return @ticket = nil
+        end
+        puts payload.inspect unless payload['issues']
         return @ticket = nil if payload['issues'].empty?
         @ticket = Gitgut::Jira::Ticket.new(payload['issues'].first)
       else
